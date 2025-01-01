@@ -1,4 +1,4 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
+<nav x-data="{ open: false, dropdownOpen: false}" class="bg-white border-b border-gray-100">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -12,14 +12,43 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
+                    @if(Auth::user()->role === 'admin')
+                        <x-nav-link :href="route('branch')" :active="request()->routeIs('branch')">
+                            {{ __('Cabang') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
+                {{-- add dropdown --}}
+                <x-dropdown align="right" width="48">
+                    <x-slot name="trigger">
+                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
+                            <svg class="h-6 w-6 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                        </button>
+                    </x-slot>
+
+                    <x-slot name="content">
+                        @if(Auth::user()->role === 'admin')
+                            <x-dropdown-link
+                                style="cursor: pointer" 
+                                @click="$dispatch('open-modal', 'add-branch-modal')" 
+                                class="block px-4 py-2 text-sm text-gray-700">
+                                Tambah Cabang
+                            </x-dropdown-link>
+                            <x-dropdown-link 
+                                {{-- @click="$dispatch('open-modal', 'add-branch-modal')"  --}}
+                                class="block px-4 py-2 text-sm text-gray-700 cursor-pointer">
+                                Tambah Layanan
+                            </x-dropdown-link>
+                        @endif
+                    </x-slot>
+                </x-dropdown>
+
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
@@ -50,6 +79,7 @@
                         </form>
                     </x-slot>
                 </x-dropdown>
+                
             </div>
 
             <!-- Hamburger -->
@@ -97,4 +127,51 @@
             </div>
         </div>
     </div>
+    <x-modal name="add-branch-modal">
+        <div style="padding: 2.5rem">
+            <h2 style="font-weight: bold" class="text-2xl mb-6">Tambah Cabang</h2>
+            <form method="POST" action="{{ route('branches.store') }}" class="flex flex-col gap-4">
+                @csrf
+        
+                <!-- name -->
+                <div>
+                    <x-input-label for="name" :value="__('Nama Cabang')" />
+                    <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="username" />
+                    <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                </div>
+
+                <!-- province -->
+                <div>
+                    <x-input-label for="province" :value="__('Provinsi')" />
+                    <x-text-input id="province" class="block mt-1 w-full" type="text" name="province" :value="old('province')" required autofocus autocomplete="username" />
+                    <x-input-error :messages="$errors->get('province')" class="mt-2" />
+                </div>
+
+                <!-- province -->
+                <div>
+                    <x-input-label for="city" :value="__('Kota')" />
+                    <x-text-input id="city" class="block mt-1 w-full" type="text" name="city" :value="old('city')" required autofocus autocomplete="username" />
+                    <x-input-error :messages="$errors->get('city')" class="mt-2" />
+                </div>
+
+                <!-- address -->
+                <div>
+                    <x-input-label for="address" :value="__('Alamat')" />
+                    <x-text-input id="address" class="block mt-1 w-full" type="text" name="address" :value="old('address')" required autofocus autocomplete="username" />
+                    <x-input-error :messages="$errors->get('address')" class="mt-2" />
+                </div>
+        
+                <div class="flex items-center justify-end mt-4 gap-2">
+                    <x-danger-button class="ms-3" type="button"
+                    @click="$dispatch('close-modal', 'add-branch-modal')"
+                    >
+                        {{ __('Tutup') }}
+                    </x-danger-button>
+                    <x-primary-button class="ms-3">
+                        {{ __('Simpan') }}
+                    </x-primary-button>
+                </div>
+            </form>
+        </div>
+    </x-modal>
 </nav>
