@@ -16,6 +16,10 @@ Route::get('/topup', function () {
     return view('topup.topup');
 });
 
+Route::get('/notif', function () {
+    return view('notif.notif');
+});
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
