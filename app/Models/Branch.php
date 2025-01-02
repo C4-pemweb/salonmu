@@ -12,4 +12,8 @@ class Branch extends Model
     protected $table = 'branches';
     protected $guarded = [];
 
+    public function services()
+    {
+        return $this->hasMany(Service::class, 'branch_id', 'id');
+    }
 }

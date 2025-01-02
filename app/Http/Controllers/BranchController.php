@@ -10,7 +10,8 @@ class BranchController extends Controller
 {
     public function index()
     {
-        $data = Branch::all();
+        $data = Branch::withCount('services')->get();
+    
         return view('admin.branch', compact('data'));
     }
     /**

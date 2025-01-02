@@ -6,6 +6,7 @@ use App\Models\Service;
 use Illuminate\Http\Request;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Branch;
 
 class ServiceController extends Controller
 {
@@ -16,6 +17,18 @@ class ServiceController extends Controller
     {
         $services = Service::all();
         return view('services.index', compact('services'));
+    }
+
+    public function getServicesByBranch($branch_id)
+    {
+        // Ambil data cabang berdasarkan ID
+        $branch = Branch::findOrFail($branch_id);
+
+        // Ambil semua layanan yang terkait dengan cabang ini
+        $services = Service::where('branch_id', $branch_id)->get();
+
+        // Kirimkan data ke view
+        return view('admin.service', compact('branch', 'services'));
     }
 
     /**

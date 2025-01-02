@@ -17,7 +17,21 @@
                                 <div style="padding: 1rem; background-color: navy;" class="rounded-full">
                                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M120-120v-560h160v-160h400v320h160v400H520v-160h-80v160H120Zm80-80h80v-80h-80v80Zm0-160h80v-80h-80v80Zm0-160h80v-80h-80v80Zm160 160h80v-80h-80v80Zm0-160h80v-80h-80v80Zm0-160h80v-80h-80v80Zm160 320h80v-80h-80v80Zm0-160h80v-80h-80v80Zm0-160h80v-80h-80v80Zm160 480h80v-80h-80v80Zm0-160h80v-80h-80v80Z"/></svg>
                                 </div>
-                                <h3 class="text-lg font-semibold text-gray-700">{{ $s->name }}</h3>
+                                <h3 class="text-lg font-semibold text-gray-700">
+                                    <a href="{{ route('branch.services', $s->id) }}" class="hover:underline">
+                                        {{ $s->name }}
+                                    </a>
+                                </h3>
+                            </div>
+                            <div>
+                                <div>
+                                    @if ($s->services_count > 0)
+                                        <p>{{ $s->services_count }} layanan tersedia</p>
+                                    @else
+                                        <p>Belum ada layanan</p>
+                                    @endif
+                                </div>
+                                
                             </div>
                             <div class="flex items-center gap-2 text-sm text-gray-600">
                                 <!-- Location Icon (SVG) -->

@@ -32,6 +32,8 @@ Route::middleware(['auth', 'verified', ShareBranches::class])->group(function ()
     // Menampilkan halaman cabang
     Route::get('/branch', [BranchController::class, 'index'])
         ->name('branch');
+    Route::get('/branch/{branch_id}', [ServiceController::class, 'getServicesByBranch'])
+        ->name('branch.services');
 
     Route::resource('branches', BranchController::class);
     Route::resource('services', ServiceController::class);
