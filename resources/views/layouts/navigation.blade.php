@@ -40,8 +40,9 @@
                                 class="block px-4 py-2 text-sm text-gray-700">
                                 Tambah Cabang
                             </x-dropdown-link>
-                            <x-dropdown-link 
-                                {{-- @click="$dispatch('open-modal', 'add-branch-modal')"  --}}
+                            <x-dropdown-link
+                                style="cursor: pointer" 
+                                @click="$dispatch('open-modal', 'add-service-modal')" 
                                 class="block px-4 py-2 text-sm text-gray-700 cursor-pointer">
                                 Tambah Layanan
                             </x-dropdown-link>
@@ -127,6 +128,8 @@
             </div>
         </div>
     </div>
+
+    {{-- modal add branch --}}
     <x-modal name="add-branch-modal">
         <div style="padding: 2.5rem">
             <h2 style="font-weight: bold" class="text-2xl mb-6">Tambah Cabang</h2>
@@ -174,4 +177,107 @@
             </form>
         </div>
     </x-modal>
+
+    {{-- modal add service --}}
+    <x-modal name="add-service-modal">
+        <div style="padding: 2.5rem" x-data="{ previewUrl: '' }">
+            <h2 style="font-weight: bold" class="text-2xl mb-6">Tambah Layanan</h2>
+            <form method="POST" action="{{ route('services.store') }}" class="flex flex-col gap-4" enctype="multipart/form-data">
+                @csrf
+    
+                <!-- Branch Dropdown -->
+                <div>
+                    <x-input-label for="branch" :value="__('Nama Cabang')" />
+                    <select 
+                        id="branch" 
+                        name="branch_id" 
+                        class="block mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-opacity-50"
+                        required
+                    >
+                        <option value="" disabled selected>Pilih Cabang</option>
+                        @foreach ($branches as $branch)
+                            <option value="{{ $branch->id }}">
+                                {{ $branch->name }} - {{ $branch->city }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <x-input-error :messages="$errors->get('branch_id')" class="mt-2" />
+                </div>
+    
+                <!-- name -->
+                <div>
+                    <x-input-label for="name" :value="__('Nama Layanan')" />
+                    <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="username" />
+                    <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                </div>
+    
+                <!-- image -->
+                <div>
+                    <x-input-label for="image" :value="__('Cover')" />
+                    <x-text-input 
+                        id="image" 
+                        class="block mt-1 w-full" 
+                        type="file" 
+                        name="img_url" 
+                        accept="image/*"
+                        x-ref="imageInput"
+                        x-on:change="
+                            const file = $refs.imageInput.files[0];
+                            if (file) {
+                                previewUrl = URL.createObjectURL(file);
+                            } else {
+                                previewUrl = '';
+                            }
+                        "
+                    />
+                    <x-input-error :messages="$errors->get('image')" class="mt-2" />
+    
+                    <!-- Image Preview -->
+                    <template x-if="previewUrl">
+                        <img 
+                            :src="previewUrl" 
+                            alt="Preview Image" 
+                            class="mt-4 rounded-md shadow-lg" 
+                            style="max-width: 200px; max-height: 200px;"
+                        />
+                    </template>
+                </div>
+    
+                <!-- description -->
+                <div>
+                    <x-input-label for="description" :value="__('Deskripsi')" />
+                    <x-text-input id="description" class="block mt-1 w-full" type="text" name="description" :value="old('description')" required autofocus autocomplete="username" />
+                    <x-input-error :messages="$errors->get('description')" class="mt-2" />
+                </div>
+    
+                <!-- harga -->
+                <div>
+                    <x-input-label for="price" :value="__('Harga (Rp)')" />
+                    <x-text-input id="price" class="block mt-1 w-full" type="number" name="price" :value="old('price')" required autofocus autocomplete="username" />
+                    <x-input-error :messages="$errors->get('price')" class="mt-2" />
+                </div>
+    
+                <!-- durasi -->
+                <div>
+                    <x-input-label for="duration" :value="__('Durasi (menit)')" />
+                    <x-text-input id="duration" class="block mt-1 w-full" type="number" name="duration" :value="old('duration')" required autofocus autocomplete="username" />
+                    <x-input-error :messages="$errors->get('duration')" class="mt-2" />
+                </div>
+        
+                <div class="flex items-center justify-end mt-4 gap-2">
+                    <x-danger-button 
+                        class="ms-3" 
+                        type="button"
+                        @click="$dispatch('close-modal', 'add-service-modal')"
+                    >
+                        {{ __('Tutup') }}
+                    </x-danger-button>
+                    <x-primary-button class="ms-3">
+                        {{ __('Simpan') }}
+                    </x-primary-button>
+                </div>
+            </form>
+        </div>
+    </x-modal>    
+    
 </nav>
