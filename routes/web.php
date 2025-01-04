@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\TopupController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\ShareBranches;
 
@@ -15,10 +16,6 @@ Route::middleware(['auth', 'verified', ShareBranches::class])->group(function ()
 
     Route::get('/book', function () {
         return view('book.book');
-    });
-    
-    Route::get('/topup', function () {
-        return view('topup.topup');
     });
     
     Route::get('/notif', function () {
@@ -35,8 +32,15 @@ Route::middleware(['auth', 'verified', ShareBranches::class])->group(function ()
     Route::get('/branch/{branch_id}', [ServiceController::class, 'getServicesByBranch'])
         ->name('branch.services');
 
+    Route::get('/top-up', [TopupController::class, 'index'])
+        ->name('branch');
+        
+    Route::post('/topup/update-status', [TopupController::class, 'updateTransactionStatus'])->name('topup.updateStatus');
+
+
     Route::resource('branches', BranchController::class);
     Route::resource('services', ServiceController::class);
+    Route::resource('topup', TopupController::class);
 });
 
 Route::middleware(['auth'])->group(function () {

@@ -32,5 +32,36 @@
                 {{ $slot }}
             </main>
         </div>
+
+        <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
+<script>
+    function submitTopUp() {
+        const amount = document.getElementById('amount').value;
+
+        fetch("{{ route('topup.store') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            },
+            body: JSON.stringify({ amount }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            snap.pay(data.snapToken, {
+                onSuccess: function() {
+                    alert('Top up berhasil!');
+                    location.reload();
+                },
+                onPending: function() {
+                    alert('Menunggu pembayaran...');
+                },
+                onError: function() {
+                    alert('Top up gagal!');
+                }
+            });
+        });
+    }
+</script>
     </body>
 </html>

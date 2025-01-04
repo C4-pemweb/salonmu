@@ -49,4 +49,9 @@ class User extends Authenticatable implements MustVerifyEmail
             'balance' => 'integer',
         ];
     }
+
+    public function topUpHistories()
+    {
+        return $this->hasMany(TopUpHistory::class, 'user_id');
+    }
 }
