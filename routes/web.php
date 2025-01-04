@@ -10,24 +10,24 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/book', function () {
-    return view('book.book');
-});
-
-Route::get('/topup', function () {
-    return view('topup.topup');
-});
-
-Route::get('/notif', function () {
-    return view('notif.notif');
-});
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
 // Terapkan middleware ShareBranches di semua route di bawah ini
 Route::middleware(['auth', 'verified', ShareBranches::class])->group(function () {
+
+    Route::get('/book', function () {
+        return view('book.book');
+    });
+    
+    Route::get('/topup', function () {
+        return view('topup.topup');
+    });
+    
+    Route::get('/notif', function () {
+        return view('notif.notif');
+    });
+    
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->middleware(['auth', 'verified'])->name('dashboard');
 
     // Menampilkan halaman cabang
     Route::get('/branch', [BranchController::class, 'index'])

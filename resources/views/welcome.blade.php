@@ -141,8 +141,8 @@
 
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg sticky-top"> <!-- Tambahkan sticky-top di sini -->
-    <div class="container">
+<nav class="navbar navbar-expand-lg sticky-top"> <!-- Tambahkan sticky-top di sini -->
+    <div class="container flex justify-between">
         <a class="navbar-brand" href="#">Salon MU</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
@@ -161,10 +161,49 @@
                 <li class="nav-item">
                     <a class="nav-link" href="#">Contact</a>
                 </li>
-                <li class="nav-item">
-                    <a class="btn btn-primary nav-link text-light" href="#">Login</a>
-                </li>
             </ul>
+        </div>
+        <div style="display: flex; gap: 0.5rem; margin-left: 1rem;">
+            @if (Route::has('login'))
+                            
+                                @auth
+                                @if(Auth::user()->role === 'customer')
+                                    <a
+                                        href="{{ url('/dashboard') }}"
+                                        class="btn btn-primary nav-link text-light"
+                                    >
+                                        Dashboard
+                                    </a>
+                                @elseif(Auth::user()->role === 'admin')
+                                    <a
+                                        href="{{ url('/branch') }}"
+                                        class="btn btn-primary nav-link text-light"
+                                    >
+                                        Dashboard
+                                    </a>
+                                @endif
+                                @else
+                                    <a
+                                        href="{{ route('login') }}"
+                                        class="btn btn-primary nav-link text-light"
+                                    >
+                                        Log in
+                                    </a>
+
+                                    @if (Route::has('register'))
+                                        <a
+                                            href="{{ route('register') }}"
+                                            class="btn btn-primary nav-link text-light"
+                                        >
+                                            Register
+                                        </a>
+                                    @endif
+                                @endauth
+                            
+                        @endif
+
+            {{-- <a class="btn btn-primary nav-link text-light" href="#">Login</a>
+            <a class="btn btn-primary nav-link text-light" href="#">Register</a> --}}
         </div>
     </div>
 </nav>
