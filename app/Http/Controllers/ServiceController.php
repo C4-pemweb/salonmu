@@ -95,7 +95,7 @@ class ServiceController extends Controller
         $validated = $request->validate([
             'branch_id' => 'required|exists:branches,id',
             'name' => 'required|string|max:255',
-            'img_url' => 'nullable|img_url|max:2048',
+            'img_url' => 'required|file|mimes:jpg,jpeg,png|max:2048',
             'description' => 'required|string',
             'price' => 'required|numeric',
             'duration' => 'required|numeric',

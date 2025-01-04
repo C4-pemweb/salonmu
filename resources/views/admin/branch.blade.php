@@ -5,7 +5,7 @@
         </h2>
     </x-slot>
 
-    <div class="py-12"">
+    <div class="py-12">
         <div  class="max-w-7xl mx-auto sm:px-6 lg:px-8" x-data="{ selectedBranch: 'message' }">
             <div style="padding: 2.5rem; flex-wrap: wrap; width: fit-content" class="bg-white overflow-hidden shadow-sm sm:rounded-lg flex gap-6 mx-auto">
                 @foreach ($data as $id => $s)
