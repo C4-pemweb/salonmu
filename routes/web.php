@@ -39,17 +39,14 @@ Route::middleware(['auth', 'verified', ShareBranches::class, ShareEmployeeData::
     Route::get('/top-up', [TopupController::class, 'index'])
         ->name('branch');
 
+        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::resource('branches', BranchController::class);
     Route::resource('services', ServiceController::class);
     Route::resource('topup', TopupController::class);
     Route::resource('bookings', BookingController::class);
-});
-
-Route::middleware(['auth'])->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 require __DIR__.'/auth.php';
