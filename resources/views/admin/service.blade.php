@@ -22,11 +22,13 @@
                         <!-- Dropdown Button -->
                         <x-dropdown align="right" width="48" class="absolute top-0 right-0">
                             <x-slot name="trigger">
+                                @if(Auth::user()->role === 'admin')
                                 <button class="inline-flex items-center px-1 py-1 border border-transparent text-sm leading-4 font-medium rounded-full text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
                                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
                                         <path d="M480-160q-33 0-56.5-23.5T400-240q0-33 23.5-56.5T480-320q33 0 56.5 23.5T560-240q0 33-23.5 56.5T480-160Zm0-240q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm0-240q-33 0-56.5-23.5T400-720q0-33 23.5-56.5T480-800q33 0 56.5 23.5T560-720q0 33-23.5 56.5T480-640Z"/>
                                     </svg>
                                 </button>
+                                @endif
                             </x-slot>
             
                             <x-slot name="content">

@@ -12,11 +12,11 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    @if(Auth::user()->role === 'admin')
+                    {{-- @if(Auth::user()->role === 'admin') --}}
                         <x-nav-link :href="url('branch')" :active="request()->routeIs('branch')">
                             {{ __('Cabang') }}
                         </x-nav-link>
-                    @endif
+                    {{-- @endif --}}
                 </div>
             </div>
 

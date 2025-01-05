@@ -164,17 +164,9 @@
             </ul>
         </div>
         <div style="display: flex; gap: 0.5rem; margin-left: 1rem;">
-            @if (Route::has('login'))
-                            
-                                @auth
-                                @if(Auth::user()->role === 'customer')
-                                    <a
-                                        href="{{ url('/dashboard') }}"
-                                        class="btn btn-primary nav-link text-light"
-                                    >
-                                        Dashboard
-                                    </a>
-                                @elseif(Auth::user()->role === 'admin')
+            @if (Route::has('login'))    
+                                @auth              
+                                @if(Auth::user())
                                     <a
                                         href="{{ url('/branch') }}"
                                         class="btn btn-primary nav-link text-light"
