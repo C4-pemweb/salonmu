@@ -13,7 +13,7 @@
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     @if(Auth::user()->role === 'admin')
-                        <x-nav-link :href="route('branch')" :active="request()->routeIs('branch')">
+                        <x-nav-link :href="url('branch')" :active="request()->routeIs('branch')">
                             {{ __('Cabang') }}
                         </x-nav-link>
                     @endif
@@ -47,6 +47,14 @@
                                 Tambah Layanan
                             </x-dropdown-link>
                         @endif
+                        @if(Auth::user()->role === 'customer')
+                            <x-dropdown-link
+                                style="cursor: pointer" 
+                                @click="$dispatch('open-modal', 'add-booking-modal')"
+                                class="block px-4 py-2 text-sm text-gray-700">
+                                Reservasi
+                            </x-dropdown-link>
+                        @endif
                     </x-slot>
                 </x-dropdown>
 
@@ -67,7 +75,7 @@
                         <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Profile') }}
                         </x-dropdown-link>
-                        <x-dropdown-link :href="route('profile.edit')">
+                        <x-dropdown-link :href="url('/top-up')">
                             {{ __('Topup') }}
                         </x-dropdown-link>
 
@@ -282,5 +290,121 @@
             </form>
         </div>
     </x-modal>    
+
+    {{-- modal add booking --}}
+    <x-modal name="add-booking-modal">
+        <div style="padding: 2.5rem" 
+        x-data="{
+            branchId: '',
+            services: [],
+            fetchServices(branchId) {
+                fetch(`/branches/${branchId}/services`)
+                    .then(response => response.json())
+                    .then(data => {
+                        this.services = data; // Update services dengan data baru
+                    });
+            }
+        }">
+            <h2 style="font-weight: bold" class="text-2xl mb-6">Reservasi</h2>
+            <form method="POST" action="{{ route('bookings.store') }}" class="flex flex-col gap-4" enctype="multipart/form-data">
+                @csrf
+                <div class="hidden">
+                    <x-input-label for="user_id" :value="__('Tanggal')" />
+                    <x-text-input id="user_id" class="block mt-1 w-full" type="text" name="user_id" :value="Auth::user()->id" required />
+                    <x-input-error :messages="$errors->get('date')" class="mt-2" />
+                </div>
+
+                <div class="hidden">
+                    <x-input-label for="status" :value="__('Tanggal')" />
+                    <x-text-input id="status" class="block mt-1 w-full" type="text" name="status" value="pending" required />
+                </div>
+    
+                <!-- Branch Dropdown -->
+                <div>
+                    <x-input-label for="branch" :value="__('Nama Cabang')" />
+                    <select 
+                        id="branch" 
+                        name="branch_id" 
+                        class="block mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-opacity-50"
+                        x-model="branchId"
+                        @change="fetchServices(branchId)"
+                        required
+                    >
+                        <option value="" disabled selected>Pilih Cabang</option>
+                        @foreach ($branches as $branch)
+                            <option value="{{ $branch->id }}">
+                                {{ $branch->name }} - {{ $branch->city }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <x-input-error :messages="$errors->get('branch_id')" class="mt-2" />
+                </div>
+    
+                <!-- Service Dropdown -->
+                <div>
+                    <x-input-label for="service" :value="__('Nama Layanan')" />
+                    <select 
+                        id="service" 
+                        name="service_id" 
+                        class="block mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-opacity-50"
+                        x-bind:disabled="services.length === 0"
+                        required
+                    >
+                        <option value="" disabled selected>Pilih Layanan</option>
+                        <template x-for="service in services" :key="service.id">
+                            <option :value="service.id" x-text="service.name"></option>
+                        </template>
+                    </select>
+                    <x-input-error :messages="$errors->get('service_id')" class="mt-2" />
+                </div>
+    
+                <!-- Employee Dropdown -->
+                <div>
+                    <x-input-label for="employee" :value="__('Nama Karyawan')" />
+                    <select 
+                        id="employee" 
+                        name="employee_id" 
+                        class="block mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-opacity-50"
+                        required
+                    >
+                        <option value="" disabled selected>Pilih Karyawan</option>
+                        @foreach ($employees as $employee)
+                            <option value="{{ $employee->id }}">{{ $employee->name }}</option>
+                        @endforeach
+                    </select>
+                    <x-input-error :messages="$errors->get('employee_id')" class="mt-2" />
+                </div>
+    
+                <!-- Date -->
+                <div>
+                    <x-input-label for="date" :value="__('Tanggal')" />
+                    <x-text-input id="date" class="block mt-1 w-full" type="date" name="date" :value="old('date')" required />
+                    <x-input-error :messages="$errors->get('date')" class="mt-2" />
+                </div>
+    
+                <!-- Time -->
+                <div>
+                    <x-input-label for="time" :value="__('Waktu')" />
+                    <x-text-input id="time" class="block mt-1 w-full" type="time" name="time" :value="old('time')" required />
+                    <x-input-error :messages="$errors->get('time')" class="mt-2" />
+                </div>
+    
+                <!-- Buttons -->
+                <div class="flex items-center justify-end mt-4 gap-2">
+                    <x-danger-button 
+                        class="ms-3" 
+                        type="button"
+                        @click="$dispatch('close-modal', 'add-booking-modal')"
+                    >
+                        {{ __('Tutup') }}
+                    </x-danger-button>
+                    <x-primary-button class="ms-3">
+                        {{ __('Simpan') }}
+                    </x-primary-button>
+                </div>
+            </form>
+        </div>
+    </x-modal>
+      
     
 </nav>

@@ -4,15 +4,19 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\TopupController;
+use App\Http\Controllers\BookingController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\ShareBranches;
+use App\Http\Middleware\ShareEmployeeData;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/branches/{branch}/services', [BranchController::class, 'getServices']);
+
 // Terapkan middleware ShareBranches di semua route di bawah ini
-Route::middleware(['auth', 'verified', ShareBranches::class])->group(function () {
+Route::middleware(['auth', 'verified', ShareBranches::class, ShareEmployeeData::class])->group(function () {
 
     Route::get('/book', function () {
         return view('book.book');
@@ -34,13 +38,12 @@ Route::middleware(['auth', 'verified', ShareBranches::class])->group(function ()
 
     Route::get('/top-up', [TopupController::class, 'index'])
         ->name('branch');
-        
-    Route::post('/topup/update-status', [TopupController::class, 'updateTransactionStatus'])->name('topup.updateStatus');
 
 
     Route::resource('branches', BranchController::class);
     Route::resource('services', ServiceController::class);
     Route::resource('topup', TopupController::class);
+    Route::resource('bookings', BookingController::class);
 });
 
 Route::middleware(['auth'])->group(function () {

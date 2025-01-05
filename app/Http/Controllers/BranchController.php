@@ -8,6 +8,11 @@ use Illuminate\Support\Str;
 
 class BranchController extends Controller
 {
+    public function getServices(Branch $branch)
+     {
+         return response()->json($branch->services);
+     }
+
     public function index()
     {
         $data = Branch::withCount('services')->get();
