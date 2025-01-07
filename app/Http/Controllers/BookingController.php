@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Booking;
 use App\Models\Service;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+
 
 class BookingController extends Controller
 {
@@ -13,12 +15,81 @@ class BookingController extends Controller
      * Display a listing of the resource.
      */
 
-    public function index()
-    {
-        $bookings = Booking::with(['user', 'employee', 'service'])->latest()->get();
+     public function index()
+     {
+         // Dapatkan pengguna yang sedang login
+         $user = Auth::user();
+     
+         // Cek role pengguna
+         if ($user->role === 'customer') {
+            $bookings = Booking::with(['user', 'employee', 'service'])
+                 ->where('user_id', $user->id)
+                 ->latest()
+                 ->get();
+         } else {
+             // Jika admin, tampilkan semua booking
+             $bookings = Booking::with(['user', 'employee', 'service'])->latest()->get();
+         }
+     
+         return view('book.book', compact('bookings'));
+     }
 
-        return view('bookings.index', compact('bookings'));
+     public function accept(Booking $booking)
+    {
+        // Validasi apakah booking sudah memiliki status "diterima" atau "batal"
+        if ($booking->status === 'diterima' || $booking->status === 'batal') {
+            return redirect()->back()->with('error', 'Booking sudah diproses sebelumnya.');
+        }
+
+        // Ambil user yang melakukan booking
+        $user = $booking->user;
+
+        // Kurangi saldo user dengan harga layanan
+        if ($user->balance < $booking->service->price) {
+            return redirect()->back()->with('error', 'Saldo pengguna tidak mencukupi.');
+        }
+
+        $user->balance -= $booking->service->price;
+        $user->save();
+
+        // Ubah status booking menjadi "diterima"
+        $booking->update([
+            'status' => 'diterima',
+        ]);
+
+        return redirect()->back()->with('success', 'Booking berhasil diterima.');
     }
+
+    public function cancel(Booking $booking)
+    {
+        // Validasi apakah booking sudah memiliki status "diterima" atau "batal"
+        if ($booking->status === 'diterima' || $booking->status === 'dibatal') {
+            return redirect()->back()->with('error', 'Booking sudah diproses sebelumnya.');
+        }
+
+        // Ubah status booking menjadi "batal"
+        $booking->update([
+            'status' => 'dibatalkan',
+        ]);
+
+        return redirect()->back()->with('success', 'Booking berhasil dibatalkan.');
+    }
+
+    public function complete(Booking $booking)
+    {
+        // Validasi apakah booking sudah memiliki status "diterima" atau "batal"
+        // if ($booking->status === 'dibatalkan') {
+        //     return redirect()->back()->with('error', 'Booking sudah diproses sebelumnya.');
+        // }
+
+        // Ubah status booking menjadi "batal"
+        $booking->update([
+            'status' => 'selesai',
+        ]);
+
+        return redirect()->back()->with('success', 'Booking berhasil selesai.');
+    }
+     
 
     /**
      * Show the form for creating a new resource.

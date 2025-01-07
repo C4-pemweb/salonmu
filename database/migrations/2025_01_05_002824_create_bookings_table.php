@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('employee_id'); // Relasi ke tabel users (sebagai employee)
             $table->date('date'); // Tanggal pemesanan
             $table->time('time'); // Waktu pemesanan
-            $table->enum('status', ['selesai', 'pending', 'diterima'])->default('pending');
+            $table->enum('status', ['selesai', 'pending', 'diterima',  'dibatalkan'])->default('pending');
             $table->timestamps();
 
              // Relasi foreign key
