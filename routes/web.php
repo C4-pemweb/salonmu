@@ -5,6 +5,7 @@ use App\Http\Controllers\BranchController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\TopupController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\ShareBranches;
 use App\Http\Middleware\ShareEmployeeData;
@@ -18,9 +19,9 @@ Route::get('/branches/{branch}/services', [BranchController::class, 'getServices
 // Terapkan middleware ShareBranches di semua route di bawah ini
 Route::middleware(['auth', 'verified', ShareBranches::class, ShareEmployeeData::class])->group(function () {
 
-    Route::get('/book', function () {
-        return view('book.book');
-    });
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
     Route::get('/notif', function () {
         return view('notif.notif');
@@ -39,17 +40,19 @@ Route::middleware(['auth', 'verified', ShareBranches::class, ShareEmployeeData::
     Route::get('/top-up', [TopupController::class, 'index'])
         ->name('branch');
 
+    Route::get('/book', [BookingController::class, 'index'])
+        ->name('book');
+
+    Route::post('/bookings/{booking}/accept', [BookingController::class, 'accept'])->name('bookings.accept');
+    Route::post('/bookings/{booking}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
+    Route::post('/bookings/{booking}/complete', [BookingController::class, 'complete'])->name('bookings.complete');
+
 
     Route::resource('branches', BranchController::class);
     Route::resource('services', ServiceController::class);
     Route::resource('topup', TopupController::class);
     Route::resource('bookings', BookingController::class);
-});
-
-Route::middleware(['auth'])->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::resource('reviews', ReviewController::class);
 });
 
 require __DIR__.'/auth.php';
