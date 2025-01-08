@@ -23,6 +23,10 @@ Route::middleware(['auth', 'verified', ShareBranches::class, ShareEmployeeData::
 
     Route::get('/notifications/unread', [NotificationController::class, 'getUnreadNotifications'])->name('notifications.unread');
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy']);
+
+    Route::post('/notification/{id}/read', [NotificationController::class, 'markRead'])->name('notifications.markRead');
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -47,6 +51,9 @@ Route::middleware(['auth', 'verified', ShareBranches::class, ShareEmployeeData::
     Route::get('/book', [BookingController::class, 'index'])
         ->name('book');
 
+    Route::get('/user', [UserController::class, 'index'])
+        ->name('user');
+
     Route::post('/bookings/{booking}/accept', [BookingController::class, 'accept'])->name('bookings.accept');
     Route::post('/bookings/{booking}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
     Route::post('/bookings/{booking}/complete', [BookingController::class, 'complete'])->name('bookings.complete');
@@ -58,6 +65,7 @@ Route::middleware(['auth', 'verified', ShareBranches::class, ShareEmployeeData::
     Route::resource('bookings', BookingController::class);
     Route::resource('reviews', ReviewController::class);
     Route::resource('users', UserController::class);
+    
     
 });
 

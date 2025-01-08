@@ -39,17 +39,40 @@
     <!-- Notification List -->
     <div class="space-y-4">
         <template x-for="notification in filteredNotifications" :key="notification.id">
-            <div class="p-4 border rounded-lg shadow-sm">
-                <h3 class="font-medium text-lg" x-text="notification.title"></h3>
-                <p class="text-gray-700 text-sm" x-text="notification.message"></p>
-                <p class="text-gray-400 text-xs mt-2" x-text="formatDate(notification.created_at)"></p>
-                <span 
-                    class="text-xs px-2 py-1 rounded-full" 
-                    :class="notification.is_read ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'">
-                    <span x-text="notification.is_read ? 'Terbaca' : 'Belum Terbaca'"></span>
-                </span>
+            <div class="p-4 border rounded-lg shadow-sm flex justify-between items-center">
+                <!-- Notification Content -->
+                <div>
+                    <h3 class="font-medium text-lg" x-text="notification.title"></h3>
+                    <p class="text-gray-700 text-sm" x-text="notification.message"></p>
+                    <p class="text-gray-400 text-xs mt-2" x-text="formatDate(notification.created_at)"></p>
+                    <span 
+                        class="text-xs px-2 py-1 rounded-full" 
+                        :class="notification.is_read ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'">
+                        <span x-text="notification.is_read ? 'Terbaca' : 'Belum Terbaca'"></span>
+                    </span>
+                </div>
+        
+                <!-- Action Buttons -->
+                <div class="flex flex-col space-y-2">
+                    <!-- Form untuk Mark as Read -->
+                    <form :action="'/notification/' + notification.id + '/read'" method="POST">
+                        @csrf
+                        <button type="submit" class="text-blue-500 hover:underline text-xs">
+                            Tandai Telah Dibaca
+                        </button>
+                    </form>
+                    
+                    <form :action="'/notifications/' + notification.id" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="text-red-500 hover:underline text-xs">
+                            Hapus
+                        </button>
+                    </form>
+                </div>
+                
             </div>
-        </template>
+        </template>        
     </div>
 
     <!-- Jika Tidak Ada Notifikasi -->
@@ -83,5 +106,6 @@
                 },
             };
         }
+        
         </script>
 </x-app-layout>

@@ -27,7 +27,7 @@
                 </div>
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     @if(Auth::user()->role === 'superadmin')
-                        <x-nav-link :href="url('book')" :active="request()->routeIs('book')">
+                        <x-nav-link :href="url('user')" :active="request()->routeIs('user')">
                             {{ __('Pengguna') }}
                         </x-nav-link>
                     @endif
