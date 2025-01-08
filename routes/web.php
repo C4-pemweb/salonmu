@@ -5,6 +5,8 @@ use App\Http\Controllers\BranchController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\TopupController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\ShareBranches;
@@ -19,13 +21,15 @@ Route::get('/branches/{branch}/services', [BranchController::class, 'getServices
 // Terapkan middleware ShareBranches di semua route di bawah ini
 Route::middleware(['auth', 'verified', ShareBranches::class, ShareEmployeeData::class])->group(function () {
 
+    Route::get('/notifications/unread', [NotificationController::class, 'getUnreadNotifications'])->name('notifications.unread');
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
-    Route::get('/notif', function () {
-        return view('notif.notif');
-    });
+    Route::get('/notif', [NotificationController::class, 'getNotifications'])->name('notifications.index');
+
     
     Route::get('/dashboard', function () {
         return view('dashboard');
@@ -53,6 +57,8 @@ Route::middleware(['auth', 'verified', ShareBranches::class, ShareEmployeeData::
     Route::resource('topup', TopupController::class);
     Route::resource('bookings', BookingController::class);
     Route::resource('reviews', ReviewController::class);
+    Route::resource('users', UserController::class);
+    
 });
 
 require __DIR__.'/auth.php';

@@ -15,22 +15,33 @@ class AdminSeeder extends Seeder
     public function run(): void
     {
         DB::table('users')->insert(
+        // [
+        //     'name' => 'Admin User',
+        //     'email' => 'admin@example.com',
+        //     'password' => Hash::make('password'), // Gunakan hash untuk keamanan
+        //     'role' => 'admin',
+        //     'img_url' => null,
+        //     'balance' => 0,
+        //     'email_verified_at' => now(),
+        //     'created_at' => now(),
+        //     'updated_at' => now(),
+        // ],
+        // [
+        //     'name' => 'Hariono',
+        //     'email' => 'hariono@gmail.com',
+        //     'password' => Hash::make('password'), // Gunakan hash untuk keamanan
+        //     'role' => 'employee',
+        //     'img_url' => null,
+        //     'balance' => 0,
+        //     'email_verified_at' => now(),
+        //     'created_at' => now(),
+        //     'updated_at' => now(),
+        // ],
         [
-            'name' => 'Admin User',
-            'email' => 'admin@example.com',
+            'name' => 'Super',
+            'email' => 'super@gmail.com',
             'password' => Hash::make('password'), // Gunakan hash untuk keamanan
-            'role' => 'admin',
-            'img_url' => null,
-            'balance' => 0,
-            'email_verified_at' => now(),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ],
-        [
-            'name' => 'Hariono',
-            'email' => 'hariono@gmail.com',
-            'password' => Hash::make('password'), // Gunakan hash untuk keamanan
-            'role' => 'employee',
+            'role' => 'superadmin',
             'img_url' => null,
             'balance' => 0,
             'email_verified_at' => now(),

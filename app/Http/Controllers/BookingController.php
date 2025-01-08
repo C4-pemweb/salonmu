@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Booking;
 use App\Models\Service;
+use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
@@ -106,9 +107,16 @@ class BookingController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+    /**
+     * Menyimpan booking dan mengirim notifikasi ke employee jika saldo cukup.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function store(Request $request)
     {
-        $validator = $request->validate([
+        // Validasi input
+        $validated = $request->validate([
             'service_id' => 'required|exists:services,id',
             'user_id' => 'required|exists:users,id',
             'employee_id' => 'required|exists:users,id',
@@ -117,16 +125,41 @@ class BookingController extends Controller
             'status' => 'required|in:selesai,pending,diterima',
         ]);
 
-        Booking::create([
-            'user_id' => $request->user_id,
-            'service_id' => $request->service_id,
-            'employee_id' => $request->employee_id,
-            'date' => $request->date,
-            'time' => $request->time,
-            'status' => $request->status,
+        // Ambil service berdasarkan ID
+        $service = Service::findOrFail($validated['service_id']);
+        // Ambil user berdasarkan ID
+        $user = User::findOrFail($validated['user_id']);
+        
+        // Cek apakah saldo user cukup untuk membayar service
+        if ($user->balance < $service->price) {
+            // Saldo tidak cukup, tampilkan alert
+            return redirect()->back()->with('error', 'Saldo tidak cukup untuk melakukan booking.');
+        }
+
+        // Buat booking baru
+        $booking = Booking::create([
+            'user_id' => $validated['user_id'],
+            'service_id' => $validated['service_id'],
+            'employee_id' => $validated['employee_id'],
+            'date' => $validated['date'],
+            'time' => $validated['time'],
+            'status' => $validated['status'],
         ]);
 
-        return redirect()->back()->with('success', 'Booking berhasil dibuat.');
+        // Kurangi saldo user sesuai harga layanan
+        $user->balance -= $service->price;
+        $user->save();
+
+        // Kirim notifikasi ke employee yang terkait dengan booking
+        Notification::create([
+            'user_id' => $validated['employee_id'],
+            'title' => 'Booking Baru',
+            'message' => 'Anda memiliki booking baru dari ' . $user->name,
+            'is_read' => false,
+        ]);
+
+        // Redirect dengan pesan sukses
+        return redirect()->back()->with('success', 'Booking berhasil dibuat dan notifikasi dikirim.');
     }
 
     /**

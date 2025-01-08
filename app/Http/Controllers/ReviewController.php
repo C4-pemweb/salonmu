@@ -69,10 +69,10 @@ class ReviewController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, string $id)
     {
         // Validasi input
-        $request->validate([
+        $validated = $request->validate([
             'rate' => 'required|integer|min:1|max:5',
             'description' => 'required|string|max:255',
         ]);
@@ -85,8 +85,11 @@ class ReviewController extends Controller
             return redirect()->back()->with('error', 'Anda tidak diizinkan untuk mengedit review ini.');
         }
 
+        $user = auth()->user();
+
         // Update review
         $review->update([
+            'user_id' => $user->id,
             'rate' => $request->rate,
             'description' => $request->description,
         ]);
@@ -97,19 +100,20 @@ class ReviewController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
-    {
-        // Cari review berdasarkan ID
-        $review = Review::findOrFail($id);
+    public function destroy(string $id)
+{
+    // Cari review berdasarkan ID
+    $review = Review::findOrFail($id);
 
-        // Pastikan hanya user yang membuat review dapat menghapusnya
-        if ($review->user_id !== auth()->id()) {
-            return redirect()->back()->with('error', 'Anda tidak diizinkan untuk menghapus review ini.');
-        }
-
-        // Hapus review
-        $review->delete();
-
-        return redirect()->back()->with('success', 'Review berhasil dihapus.');
+    // Pastikan hanya user yang membuat review dapat menghapusnya
+    if ($review->user_id !== auth()->id()) {
+        return redirect()->back()->with('error', 'Anda tidak diizinkan untuk menghapus review ini.');
     }
+
+    // Hapus review
+    $review->delete();
+
+    return redirect()->back()->with('success', 'Review berhasil dihapus.');
+}
+
 }
