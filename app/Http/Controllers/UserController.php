@@ -12,7 +12,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::paginate(10); // Atau gunakan metode lainnya
-        return view('users.index', compact('users'));
+        return view('user.index', compact('users'));
     }
 
     // Menampilkan form untuk membuat user baru
@@ -81,6 +81,6 @@ class UserController extends Controller
     {
         $user->delete();
 
-        return redirect()->route('users.index')->with('success', 'User berhasil dihapus.');
+        return redirect()->back()->with('success', 'User berhasil dihapus.');
     }
 }

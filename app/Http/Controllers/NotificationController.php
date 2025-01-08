@@ -70,6 +70,18 @@ class NotificationController extends Controller
     return view('notif.notif', compact('notifications'));
 }
 
+public function markRead($id)
+{
+    $notification = Notification::where('user_id', Auth::id())
+        ->findOrFail($id);
+    
+    $notification->update(['is_read' => true]);
+    
+    return back()->with('success', 'Notifikasi ditandai sebagai terbaca');
+}
+
+
+
 
     public function getUnreadNotifications(Request $request)
     {
@@ -102,5 +114,21 @@ class NotificationController extends Controller
 
     return response()->json(['message' => 'Notifikasi berhasil ditandai sebagai telah dibaca']);
 }
+
+public function destroy($id)
+{
+    $notification = Notification::findOrFail($id);
+
+    // Cek apakah notifikasi milik user yang sedang login
+    if ($notification->user_id !== auth()->id()) {
+        return redirect()->back()->withErrors('Anda tidak memiliki akses ke notifikasi ini.');
+    }
+
+    $notification->delete();
+
+    return redirect()->back()->with('success', 'Notifikasi telah dihapus.');
+}
+
+
 
 }
