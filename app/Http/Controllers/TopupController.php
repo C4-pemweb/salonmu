@@ -31,43 +31,56 @@ class TopUpController extends Controller
 
     // Proses membuat transaksi top-up
     public function store(Request $request)
-    {
-        $request->validate([
-            'amount' => 'required|integer|min:10000', // Minimal Rp 10.000
-        ]);
+{
+    // Validasi input
+    $request->validate([
+        'amount' => 'required|integer|min:10000', // Minimal Rp 10.000
+    ]);
 
-        $user = auth()->user();
-        $amount = $request->amount;
+    // Ambil data user yang sedang login
+    $user = auth()->user();
+    $amount = $request->amount;
 
-        $user->balance += $amount;
-        $user->save();
+    // Parameter untuk Midtrans
+    $params = [
+        'transaction_details' => [
+            'order_id' => 'topup_' . uniqid(), // Unik ID untuk order_id
+            'gross_amount' => $amount,
+        ],
+        'customer_details' => [
+            'first_name' => $user->name,
+            'email' => $user->email,
+        ],
+    ];
 
-        // Simpan transaksi ke top_up_history
-        $history = TopUpHistory::create([
-            'user_id' => $user->id,
-            'amount' => $amount,
-            'status' => 'sukses', // Awalnya pending
-            'midtrans_transaction_id' => '', // Akan diupdate nanti
-        ]);
-
-        // Parameter untuk Midtrans
-        $params = [
-            'transaction_details' => [
-                'order_id' => $history->id,
-                'gross_amount' => $amount,
-            ],
-            'customer_details' => [
-                'first_name' => $user->name,
-                'email' => $user->email,
-            ],
-        ];
-
+    try {
         // Generate Snap Token
         $snapToken = Snap::getSnapToken($params);
 
+        // Jika Snap Token berhasil, simpan transaksi ke top_up_history
+        $history = TopUpHistory::create([
+            'user_id' => $user->id,
+            'amount' => $amount,
+            'status' => 'sukses', // Status awal adalah pending
+            'midtrans_transaction_id' => '', // Akan diupdate nanti
+        ]);
+
+        // Update saldo pengguna
+        $user->balance += $amount;
+        $user->save();
+
+        // Kembalikan Snap Token sebagai respons
         return response()->json([
             'snapToken' => $snapToken,
         ]);
+        
+    } catch (\Exception $e) {
+        // Jika terjadi error saat pembuatan Snap Token
+        return response()->json([
+            'error' => 'Gagal membuat Snap Token: ' . $e->getMessage(),
+        ], 500);
     }
+}
+
 }
 

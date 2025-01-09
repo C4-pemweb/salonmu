@@ -6,8 +6,8 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+        <div class="max-w-7xl mx-auto sm:p-6 lg:p-8">
+            <div style="padding: 1em" class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <h2 class="text-xl font-semibold mb-4">Top-Up Saldo</h2>
         <form id="topUpForm">
             <label for="amount" class="block text-gray-700 font-medium mb-2">Masukkan jumlah top-up (minimal Rp 10.000):</label>
@@ -21,8 +21,9 @@
             >
             <button 
                 type="button" 
-                onclick="submitTopUp()" 
-                class="bg-blue-500 px-4 py-2 rounded-md hover:bg-blue-600">
+                onclick="submitTopUp()"
+                style="background-color: navy" 
+                class="px-4 py-2 text-white rounded-md hover:bg-blue-600">
                 Top Up
             </button>
         </form>
@@ -45,10 +46,10 @@
                     <td class="border border-gray-300 px-4 py-2">{{ $history->created_at->format('d-m-Y H:i') }}</td>
                     <td class="border border-gray-300 px-4 py-2">Rp {{ number_format($history->amount, 0, ',', '.') }}</td>
                     <td class="border border-gray-300 px-4 py-2">
-                        <span class="px-2 py-1 rounded text-white {{ $history->status == 'sukses' ? 'bg-green-500' : ($history->status == 'pending' ? 'bg-yellow-500' : 'bg-red-500') }}">
+                        <span class="px-2 py-1 rounded text-white" style="background-color: {{ $history->status == 'sukses' ? '#48bb78' : ($history->status == 'pending' ? '#fbbf24' : '#f87171') }};">
                             {{ $history->status }}
                         </span>
-                    </td>
+                    </td>                    
                 </tr>
                 @empty
                 <tr>

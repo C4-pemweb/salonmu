@@ -13,7 +13,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             // RoleSeeder::class, // Pastikan ini ada jika Anda membuat RoleSeeder
-            // BranchSeeder::class, // Tambahkan Seeder Anda di sini
+            BranchSeeder::class, // Tambahkan Seeder Anda di sini
             AdminSeeder::class
         ]);
     }

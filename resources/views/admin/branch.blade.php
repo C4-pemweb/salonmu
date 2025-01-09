@@ -7,9 +7,16 @@
 
     <div class="py-12">
         <div  class="max-w-7xl mx-auto sm:px-6 lg:px-8" x-data="{ selectedBranch: 'message' }">
+            @if(Auth::user()->role === 'admin' || Auth::user()->role === 'superadmin' || Auth::user()->role === 'employee')
+            <div class="p-6 bg-white mb-6">
+                <h3 class="text-xl font-semibold mb-4">Statistik Cabang dan Layanan</h3>
+                <canvas id="branchServiceChart" width="100%" height="30"></canvas>
+            </div>
+            @endif
+            <div class="dark:bg-dark">
             <div style="padding: 2.5rem; flex-wrap: wrap; width: fit-content" class="bg-white overflow-hidden shadow-sm sm:rounded-lg flex gap-6 mx-auto">
                 @foreach ($data as $id => $s)
-                    <div style="width: 20rem" class="bg-white shadow-md rounded-lg p-4 mb-4 flex items-start justify-between" x-data="{ open: false }">
+                    <div style="width: 20rem" class="dark shadow-md rounded-lg p-4 mb-4 flex items-start justify-between" x-data="{ open: false }">
                         <!-- Left Section: Info -->
                         <div class="flex flex-col gap-2 w-3/4">
                             <div class="flex items-center gap-2">
@@ -75,8 +82,10 @@
                     </div>
                     
                 @endforeach
-                
-                
+                </div>
+                <div class="mt-6">
+                    {{ $data->links() }}
+                </div>
             </div>
             <x-modal name="edit-branch-modal">
                 <div style="padding: 2.5rem" x-data="{
@@ -157,5 +166,35 @@
         </div>
         <!-- Modal for Editing Branch -->
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        var ctx = document.getElementById('branchServiceChart').getContext('2d');
+        var branchServiceChart = new Chart(ctx, {
+            type: 'bar', // Tipe chart (bar, line, pie, dll.)
+            data: {
+                labels: ['Jumlah Cabang', 'Jumlah Layanan'],
+                datasets: [{
+                    label: 'Jumlah Data',
+                    data: [{{ $branchCount }}, {{ $serviceCount }}], // Data yang diambil dari controller
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
 
 </x-app-layout>

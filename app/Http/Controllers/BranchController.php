@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Branch;
+use App\Models\Service;
 use Illuminate\Support\Str;
 
 class BranchController extends Controller
@@ -15,9 +16,14 @@ class BranchController extends Controller
 
     public function index()
     {
-        $data = Branch::withCount('services')->get();
+        $branchCount = Branch::count();
+
+    // Ambil jumlah layanan di semua cabang
+        $serviceCount = Service::count();
+        
+        $data = Branch::withCount('services')->paginate(10);
     
-        return view('admin.branch', compact('data'));
+        return view('admin.branch', compact('data','branchCount', 'serviceCount'));
     }
     /**
      * Menampilkan form untuk menambahkan branch.

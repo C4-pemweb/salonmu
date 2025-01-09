@@ -43,32 +43,38 @@ class ServiceController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'branch_id' => 'required|exists:branches,id',
-            'name' => 'required|string|max:255',
-            'img_url' => 'required|file|mimes:jpg,jpeg,png|max:2048', // Perbaikan aturan validasi
-            'description' => 'required|string',
-            'price' => 'required|numeric',
-            'duration' => 'required|numeric',
-        ]);
+{
+    $validated = $request->validate([
+        'branch_id' => 'required|exists:branches,id',
+        'name' => 'required|string|max:255',
+        'img_url' => 'required|file|mimes:jpg,jpeg,png|max:3000', // Perbaikan aturan validasi
+        'description' => 'required|string',
+        'price' => 'required|numeric',
+        'duration' => 'required|numeric',
+    ]);
 
-        // Upload file ke Cloudinary
-        $img_url = $request->file('img_url');
-        $uploadedimg_url = Cloudinary::upload($img_url->getRealPath())->getSecurePath();
-
-        // Simpan ke database
-        $service = Service::create([
-            'branch_id' => $validated['branch_id'],
-            'name' => $validated['name'],
-            'img_url' => $uploadedimg_url, // Gunakan URL dari Cloudinary
-            'description' => $validated['description'],
-            'price' => $validated['price'],
-            'duration' => $validated['duration'],
-        ]);
-
-        return redirect()->back()->with('success', 'Data berhasil ditambahkan');
+    // Cek jika ada kesalahan dalam validasi gambar
+    if ($request->hasFile('img_url') && !$request->file('img_url')->isValid()) {
+        return redirect()->back()->withErrors(['img_url' => 'Gambar tidak valid atau gagal diupload.']);
     }
+
+    // Upload file ke Cloudinary
+    $img_url = $request->file('img_url');
+    $uploadedimg_url = Cloudinary::upload($img_url->getRealPath())->getSecurePath();
+
+    // Simpan ke database
+    $service = Service::create([
+        'branch_id' => $validated['branch_id'],
+        'name' => $validated['name'],
+        'img_url' => $uploadedimg_url, // Gunakan URL dari Cloudinary
+        'description' => $validated['description'],
+        'price' => $validated['price'],
+        'duration' => $validated['duration'],
+    ]);
+
+    return redirect()->back()->with('success', 'Data berhasil ditambahkan');
+}
+
 
 
     /**

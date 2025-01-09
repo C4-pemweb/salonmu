@@ -39,11 +39,13 @@
                 {{-- add dropdown --}}
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
+                        @if(Auth::user()->role === 'admin' || Auth::user()->role === 'superadmin' || Auth::user()->role === 'customer')
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
                             <svg class="h-6 w-6 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                             </svg>
                         </button>
+                        @endif
                     </x-slot>
 
                     <x-slot name="content">
@@ -85,7 +87,12 @@
                     <button 
                         @click="showModal = true" 
                         class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                        <span x-text="unreadCount" class="ml-2 text-red-500 font-bold"></span>
+                        <span 
+                            x-text="unreadCount" 
+                            :style="{ color: 'red', opacity: unreadCount == 0 ? 0 : 1 }" 
+                            class="ml-2 font-bold">
+                        </span>
+
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
                             <path d="M160-200v-80h80v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q80 20 130 84.5T720-560v280h80v80H160Zm320-300Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80ZM320-280h320v-280q0-66-47-113t-113-47q-66 0-113 47t-47 113v280Z"/>
                         </svg>
@@ -115,8 +122,9 @@
                                             <p x-text="notification.message" class="text-sm text-gray-700"></p>
                                             <p x-text="new Date(notification.created_at).toLocaleString()" class="text-xs text-gray-500"></p>
                                             <button 
-                                                @click="markAsRead(notification.id)" 
-                                                class="text-xs text-blue-500 hover:underline mt-1">
+                                                @click="markAsRead(notification.id)"
+                                                style="color: navy" 
+                                                class="text-xs hover:underline mt-1">
                                                 Tandai telah dibaca
                                             </button>
                                         </div>
@@ -130,8 +138,9 @@
                             <!-- Modal Footer -->
                             <div class="flex justify-between mt-4">
                                 <a 
-                                    href="{{ route('notifications.index') }}" 
-                                    class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
+                                    href="{{ route('notifications.index') }}"
+                                    style="background-color: navy" 
+                                    class="px-4 py-2 bg-gray-200 text-white rounded hover:bg-gray-300">
                                     Lihat Semua Notifikasi
                                 </a>
 
@@ -140,10 +149,6 @@
                     </div>
 
                 </div>
-                
-                
-                
-                
 
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
@@ -162,8 +167,11 @@
                         <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Profile') }}
                         </x-dropdown-link>
+                        <x-dropdown-link>
+                            {{ 'Role : ' . Auth::user()->role }}
+                        </x-dropdown-link>
                         <x-dropdown-link :href="url('/top-up')">
-                            {{ __('Topup') }}
+                            {{ 'Rp ' . number_format(Auth::user()->balance, 0, ',', '.') }}
                         </x-dropdown-link>
 
                         <!-- Authentication -->
